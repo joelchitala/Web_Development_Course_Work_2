@@ -19,10 +19,7 @@ client.connect(uri,(err,cli)=>{
 app.use(cors())
 app.use((req,res,next)=>{
     let dt = new Date();
-    let formatted_date =
-      `${dt.getFullYear()} - ${dt.getMonth() + 1} - ${dt.getDate()}
-       ${dt.getHours()}:${dt.getMinutes()}:${dt.getSeconds()}
-      `
+    let formatted_date = `${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:${dt.getSeconds()}`
     let formatted_log = `[${formatted_date}] ${req.method}:${req.url} ${res.statusCode}`;
     console.log(formatted_log);
     next()
