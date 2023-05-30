@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="index.css">
-    <title>Index</title>
+    <title>After School Activities Store</title>
 </head>
 <body>
     <section id="app">
@@ -19,7 +19,6 @@
         </header>
         <main>
             <section id="main_page" v-if="showlessons">
-                
                 <section style="display: flex; flex-direction: row; width: 100%;">
                     <section style="width: 30%;">
                         <h3>Filter & Order</h3>
@@ -43,11 +42,8 @@
                                     <label for="order">{{key}}</label>
                                 </div>
                             </div>
-        
-                            
                         </div>
                     </section>
-
                     <section style="width: 100%;">
                         <div style="width: 100%; display: inline-flex; align-items: center; justify-content: flex-start;">
                             <div style="align-self: flex-end; margin-right: 2rem;">
@@ -65,17 +61,14 @@
                                 <input type="text" v-bind:placeholder="searchTerm"  v-model="searchInput" v-on>
                                 <button><i class='bx bx-search'></i></button>
                             </div>
-                            
                         </div>
-                        
-
                         <div id="lessons">
                             <div class="lesson" v-for="item in lessons">
                                 <img class="image" v-bind:src="item.image">
                                 <div class="info_container">
                                     <p>Subject: {{item.subject}}</p>
                                     <p>Location: {{item.location}}</p>
-                                    <p>Price: ${{item.price}}</p>
+                                    <p>Price: {{item.price}} AED</p>
                                     <p>Spaces: {{item.spaces}}</p>
                                     <button v-if="item.spaces > 0" v-on:click="add_to_cart(item)">Add To Cart</button>
                                     <button v-else disabled>Add To Cart</button>
@@ -103,7 +96,7 @@
                             <input title="phone" name="phone" type="text" v-model.trim="user_data.phone">
                         </div>
                         <div v-if="canCheckout">
-                            <button v-on:click="checkout()">Checkout</button>
+                            <button style="font-size: 1.15rem;" v-on:click="checkout()">Checkout</button>
                         </div>
                     </div>
                 </div>
@@ -111,236 +104,236 @@
                     <h2>Cart({{cartItemCount}})</h2>
                     <div id="lessons">
                         <div class="lesson" v-for="item in cart">
-                            <img class="image" v-bind:src="item.item.image">
+                            <img title="image" class="image" v-bind:src="item.item.image">
                             <div class="info_container">
                                 <p>Subject: {{item.item.subject}}</p>
                                 <p>Location: {{item.item.location}}</p>
-                                <p>Price: {{item.item.price}}</p>
+                                <p>Price: {{item.item.price}} AED</p>
                                 <button  v-on:click="remove_from_cart(item)">Remove From Cart</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
-            
         </main>
     </section>
 </body>
 <script>
 
-        const webstore = new Vue({
-        el:"#app",
-        created:()=>{
-            fetch("http://localhost:4000/collection/lessons").then((res)=>{
-                    res.json().then((json)=>{
-                        const location = `http://localhost:4000`
-                        webstore.lessons = json.map((x)=>{
-                            x["image"] = `${location}/${x["image"]}`
-                            return x
-                        })
-                    })
+const webstore = new Vue({
+    el:"#app",
+    created:()=>{
+        fetch("http://localhost:4000/collection/lessons").then((res)=>{
+            res.json().then((json)=>{
+                const location = `http://localhost:4000`
+                webstore.lessons = json.map((x)=>{
+                    x["image"] = `${location}/${x["image"]}`
+                    return x
+                })
             })
+        })
+    },
+    computed:{
+        cartItemCount(){
+            return this.cart.length
         },
-        computed:{
-            cartItemCount(){
-                return this.cart.length
-            },
-            canAddToCart(){
-                return this.lesson.availableInventory > this.cart.length
-            },
-            canRemoveFromCart(){
-                return this.cart.length > 0
-            },
-            search(){
-                if(this.searchInput.trim() !== ""){
-                    if (this.ischanged !== this.searchInput) {
-                        this.search_func(this.searchInput)
-                        this.ischanged = this.searchInput
-                    }
-                }else{
-                    this.ischanged = ''
-                    this.load_lessons()
+        canAddToCart(){
+            return this.lesson.availableInventory > this.cart.length
+        },
+        canRemoveFromCart(){
+            return this.cart.length > 0
+        },
+       
+        canCheckout(){
+            const user = this.user_data
+            return user.name.match(/^[A-Za-z\s]+$/) && user.phone.match(/^[0-9]+$/)
+        },
+        search(){
+            if(this.searchInput.trim() !== ""){
+                if (this.ischanged !== this.searchInput) {
+                    this.search_func(this.searchInput)
+                    this.ischanged = this.searchInput
+                    this.hasSerached = true
                 }
-            },
-            canCheckout(){
-                const user = this.user_data
-                return user.name.match(/^[A-Za-z\s]+$/) && user.phone.match(/^[0-9]+$/)
+            }else{
+                this.ischanged = ''
+
+                if (this.hasSerached) {
+                    console.log("search");
+                    this.load_lessons()
+                    this.hasSerached = false
+                }
+                
             }
         },
-        watch:{
-            search(){}
-        },
-        methods:{
-            load_lessons(){
-                fetch("http://localhost:4000/collection/lessons").then((res)=>{
-                    res.json().then((json)=>{
-                        const location = `http://localhost:4000`
-                        webstore.lessons = json.map((x)=>{
-                            x["image"] = `${location}/${x["image"]}`
-                            return x
-                        })
-                    })
-                })
-            },
-            checkout(){
-                let data = {}
-                for (let i = 0; i < this.cart.length; i++) {
-                    const item = this.cart[i].item;
-                    if (!data[`${item["_id"]}`]) {
-                        data[`${item["_id"]}`] = {
-                            "spaces":1,
-                            "item":item
-                        }
-                    }else{
-                        data[`${item["_id"]}`]["spaces"]++
-                    }
-                    
-                }
-                const keys = Object.keys(data)
-                const values = Object.values(data)
-                
-                fetch(`http://localhost:4000/collection/orders`,{
-                    method:'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        "name":this.user_data["name"],
-                        "phone":this.user_data["phone"],
-                    })
-                }).then(result => result.json())
-                .then(result =>{
-                    if (result.length == 1) {
-                        fetch(`http://localhost:4000/collection/orders/${result[0]["_id"]}`,{
-                            method:'PUT',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({"items":values})
-                        }).then(result => result.json())
-                        .then(result => {
-                            if(result["msg"]){
-                                for (let i = 0; i < keys.length; i++) {
-                                    const key = keys[i];
-                                    const value = values[i];
-
-                                    fetch(`http://localhost:4000/collection/lessons/${key}`,{
-                                        method:'PUT',
-                                        headers: {
-                                            'Content-Type': 'application/json'
-                                        },
-                                        body: JSON.stringify({"spaces":value["item"].spaces})
-                                    })
-                                }
-                                this.cart = []
-                                this.showlessons = true
-                            }else{
-                                alert("Order failed")
-                            }
-                        })
-                    }
-                }).catch(err =>{
-                    console.log(err);
-                })
-            },
-            showCheckout(){
-                this.showlessons = this.showlessons ? false : true
-            },
-            add_to_cart(item){
-                const id = `${item.subject[0]}`+item._id+`${item.location[0]}`+Math.ceil(Math.random()*1000000)
-                let data = {
-                    "_id": id,
-                    "item":item,
-                }
-                item.spaces--
-                this.cart.push(data)
-            },
-            remove_from_cart(cart_item){
-                for(let i = 0; i < this.cart.length; i++){
-                    const item = this.cart[i]
-                    if(cart_item._id == item._id){
-                        item.item.spaces++
-                        this.cart.splice(i,1)
-                        break;
-                    }
-                }
-            },
-            
-            search_func(query){
-                let val = this.sort_value.toLowerCase()
-
-                if(val != "all" & query.trim() != ''){
-
-                    fetch(`http://127.0.0.1:4000/search-lessons/collection/lessons/${val}/${query}`).then(res => res.json())
-                    .then(result => {
-                        const location = `http://localhost:4000`
-                        this.lessons = result.map((x)=>{
+        
+    },
+    watch:{
+        search(){
+        }
+    },
+    methods:{
+        load_lessons(){
+            fetch("http://localhost:4000/collection/lessons").then((res)=>{
+                res.json().then((json)=>{
+                    const location = `http://localhost:4000`
+                    webstore.lessons = json.map((x)=>{
                         x["image"] = `${location}/${x["image"]}`
                         return x
                     })
-                    }).catch(err => {
-                        console.error('Error:', err);
-                    });
                     this.order_sort(this.sort_value)
-                }
-
-                if(query.trim() == ''){
-                    this.load_lessons()
-                    this.order_sort(this.sort_value)
-                }
-
-            },
-            order(value){
-                this.order_value = value
-                this.order_sort(this.sort_value)
-            },
-            sort(value){
-                this.sort_value = value
-                this.order_sort(value)
-            },
-            order_sort(criteria){
-                criteria = criteria.toLowerCase()
-                if(criteria != "all"){
-                    this.searchTerm = criteria
-                    const isAscending = this.order_value == "Ascending"
-                    this.lessons.sort((a,b)=>{
-                        if(a[criteria] > b[criteria]) return isAscending ? 1 : -1
-                        if(b[criteria] > a[criteria]) return isAscending ? -1 : 1                       
-                        return 0
-                    })
-                    
+                })
+            })
+        },
+        checkout(){
+            let data = {}
+            for (let i = 0; i < this.cart.length; i++) {
+                const item = this.cart[i].item;
+                if (!data[`${item["_id"]}`]) {
+                    data[`${item["_id"]}`] = {
+                        "spaces":1,
+                        "item":item
+                    }
                 }else{
-                    this.searchTerm = "Please choose criteria eg. subject, location, price."
-                    this.load_lessons()
+                    data[`${item["_id"]}`]["spaces"]++
                 }
             }
-        
+            const keys = Object.keys(data)
+            const values = Object.values(data)
+            fetch(`http://localhost:4000/collection/orders`,{
+                method:'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "name":this.user_data["name"],
+                    "phone":this.user_data["phone"],
+                })
+            })
+            .then(result => result.json())
+            .then(result =>{
+                if (result.length == 1) {
+                    fetch(`http://localhost:4000/collection/orders/${result[0]["_id"]}`,{
+                        method:'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({"items":values})
+                    }).then(result => result.json())
+                    .then(result => {
+                        if(result["msg"]){
+                            for (let i = 0; i < keys.length; i++) {
+                                const key = keys[i];
+                                const value = values[i];
+                                fetch(`http://localhost:4000/collection/lessons/${key}`,{
+                                    method:'PUT',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({"spaces":value["item"].spaces})
+                                })
+                            }
+                            this.cart = []
+                            this.showlessons = true
+                        }else{
+                            alert("Order failed")
+                        }
+                    })
+                }
+            }).catch(err =>{
+                console.log(err);
+            });
         },
-        data:{
-            sitename:"After School Activities Store",
-            cart:[],
-            order_value:"Ascending",
-            order_dict:{
-                "Ascending":{id:1,checked:true},
-                "Descending":{id:2,checked:false}
-            },
-            sort_value:"All",
-            sort_dict:{
-                "All":{id:1,checked:true},
-                "Subject":{id:2,checked:false},
-                "Location":{id:3,checked:false},
-                "Price":{id:4,checked:false}
-            },
-            searchInput:'',
-            ischanged:'',
-            searchTerm:'Please choose criteria eg. subject, location, price.',
-            lessons: [],
-            showlessons:true,
-            user_data:{
-                name:"",
-                phone:"",
+        showCheckout(){
+            this.showlessons = this.showlessons ? false : true
+        },
+        add_to_cart(item){
+            const id = `${item.subject[0]}`+item._id+`${item.location[0]}`+Math.ceil(Math.random()*1000000)
+            let data = {
+                "_id": id,
+                "item":item,
+            }
+            item.spaces--
+            this.cart.push(data)
+        },
+        remove_from_cart(cart_item){
+            for(let i = 0; i < this.cart.length; i++){
+                const item = this.cart[i]
+                if(cart_item._id == item._id){
+                    item.item.spaces++
+                    this.cart.splice(i,1)
+                    break;
+                }
+            }
+        },
+        search_func(query){
+            let val = this.sort_value.toLowerCase()
+
+            if(val != "all" & query.trim() != ''){
+
+                fetch(`http://127.0.0.1:4000/search-lessons/collection/lessons/${val}/${query}`).then(res => res.json())
+                .then(result => {
+                    const location = `http://localhost:4000`
+                    webstore.lessons = result.map((x)=>{
+                        x["image"] = `${location}/${x["image"]}`
+                        return x
+                    })
+                    this.order_sort(this.sort_value)
+                }).catch(err => {
+                    console.error('Error:', err);
+                });
+                
+            }
+        },
+        order(value){
+            this.order_value = value
+            this.order_sort(this.sort_value)
+        },
+        sort(value){
+            this.sort_value = value
+            this.order_sort(value)
+        },
+        order_sort(criteria){
+            criteria = criteria.toLowerCase()
+            if(criteria != "all"){
+                this.searchTerm = criteria
+                const isAscending = this.order_value == "Ascending"
+                this.lessons.sort((a,b)=>{
+                    if(a[criteria] > b[criteria]) return isAscending ? 1 : -1
+                    if(b[criteria] > a[criteria]) return isAscending ? -1 : 1                       
+                    return 0
+                })
+            }else{
+                this.searchTerm = "Please choose criteria eg. subject, location, price."
+                this.load_lessons()
             }
         }
-    })
+    },
+    data:{
+        sitename:"After School Activities Store",
+        cart:[],
+        order_value:"Ascending",
+        order_dict:{
+            "Ascending":{id:1,checked:true},
+            "Descending":{id:2,checked:false}
+        },
+        sort_value:"All",
+        sort_dict:{
+            "All":{id:1,checked:true},
+            "Subject":{id:2,checked:false},
+            "Location":{id:3,checked:false},
+            "Price":{id:4,checked:false}
+        },
+        searchInput:'',
+        ischanged:'',
+        searchTerm:'Please choose criteria eg. subject, location, price.',
+        lessons: [],
+        showlessons:true,
+        user_data:{
+            name:"",
+            phone:"",
+        }
+    }
+})
 </script>
 </html>
