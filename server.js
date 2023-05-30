@@ -27,3 +27,99 @@ app.use((req,res,next)=>{
     console.log(formatted_log);
     next()
 });
+
+app.use(express.json());
+
+app.use((req,res,next)=>{
+    const filePath = path.join(__dirname,"static/images",req.url)
+    fs.stat(filePath, (err, info) =>{
+        if (err) {
+            next()
+            return
+        }else{
+            if (info.isFile()) {
+                res.sendFile(filePath)
+            }else{
+                next()
+            }
+        }
+    })
+})
+
+app.param('collectionName',(req,res,next,collectionName)=>{
+    if (db != undefined) {
+        req.collection = db.collection(collectionName);
+    }
+    return next()
+})
+
+
+app.get('/',(req,res)=>{
+    res.send("Welcome")
+});
+
+// Route for sending images
+app.get('/collection/:collectionName', (req, res) => {
+    req.collection.find({}).toArray((e,results)=>{
+        if (e) return next(e);
+        res.send(results)
+    })
+});
+
+app.get('/search-lessons/collection/:collectionName/:mode/:query', (req, res) => {
+    if (!req.body)return {"msg":"failed"}
+    
+    switch (`${req.params.mode}`.toLowerCase()) {
+        case "subject":
+            req.collection.find({subject: new RegExp(req.params.query, 'i')}).toArray((e,results)=>{
+                if (e) return next(e);
+                res.send(results)
+            })
+            break;
+        case "location":
+            req.collection.find({location: new RegExp(req.params.query, 'i')}).toArray((e,results)=>{
+                if (e) return next(e);
+                res.send(results)
+            })
+            break;
+        case "price":
+            req.collection.find({price: parseFloat(req.params.query)}).toArray((e,results)=>{
+                if (e) return next(e);
+                res.send(results)
+            })
+            break;
+        default:
+            next(e)
+            break;
+    }
+});
+
+app.get("/collection/:collectionName/:id",(req,res,next)=>{
+    req.collection.findOne({_id: new ObjectId(req.params.id)},(e,results)=>{
+        if (e) return next(e);
+        res.send(results)
+    })
+})
+
+app.put("/collection/:collectionName/:id",(req,res,next)=>{
+    console.log(req.params.id);
+    req.collection.updateOne(
+    {_id: new ObjectId(req.params.id)},
+    {$set:req.body},
+    {safe: true, multi:false},
+    (e,results)=>{
+        if (e) return next(e)
+        res.send(results.result.n == 1 ? {msg: true} : {msg:false})
+    })
+})
+
+app.post('/collection/:collectionName', bodyParser.json(), (req, res) => {
+    req.collection.insertOne(req.body,(e,results)=>{
+        if (e) return next(e)
+        res.send(results.ops)
+    })
+  });
+
+app.listen(port, () => {
+  console.log(`Server is running on port http://127.0.0.1:${port}`);
+});
