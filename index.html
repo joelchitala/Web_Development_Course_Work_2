@@ -119,13 +119,13 @@
     </section>
 </body>
 <script>
-
+const port = 3000
 const webstore = new Vue({
     el:"#app",
     created:()=>{
-        fetch("http://localhost:4000/collection/lessons").then((res)=>{
+        fetch(`http://localhost:${port}/collection/lessons`).then((res)=>{
             res.json().then((json)=>{
-                const location = `http://localhost:4000`
+                const location = `http://localhost:${port}`
                 webstore.lessons = json.map((x)=>{
                     x["image"] = `${location}/${x["image"]}`
                     return x
@@ -174,9 +174,9 @@ const webstore = new Vue({
     },
     methods:{
         load_lessons(){
-            fetch("http://localhost:4000/collection/lessons").then((res)=>{
+            fetch(`http://localhost:${port}/collection/lessons`).then((res)=>{
                 res.json().then((json)=>{
-                    const location = `http://localhost:4000`
+                    const location = `http://localhost:${port}`
                     webstore.lessons = json.map((x)=>{
                         x["image"] = `${location}/${x["image"]}`
                         return x
@@ -200,7 +200,7 @@ const webstore = new Vue({
             }
             const keys = Object.keys(data)
             const values = Object.values(data)
-            fetch(`http://localhost:4000/collection/orders`,{
+            fetch(`http://localhost:${port}/collection/orders`,{
                 method:'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -213,7 +213,7 @@ const webstore = new Vue({
             .then(result => result.json())
             .then(result =>{
                 if (result.length == 1) {
-                    fetch(`http://localhost:4000/collection/orders/${result[0]["_id"]}`,{
+                    fetch(`http://localhost:${port}/collection/orders/${result[0]["_id"]}`,{
                         method:'PUT',
                         headers: {
                             'Content-Type': 'application/json'
@@ -225,7 +225,7 @@ const webstore = new Vue({
                             for (let i = 0; i < keys.length; i++) {
                                 const key = keys[i];
                                 const value = values[i];
-                                fetch(`http://localhost:4000/collection/lessons/${key}`,{
+                                fetch(`http://localhost:${port}/collection/lessons/${key}`,{
                                     method:'PUT',
                                     headers: {
                                         'Content-Type': 'application/json'
@@ -271,9 +271,9 @@ const webstore = new Vue({
 
             if(val != "all" & query.trim() != ''){
 
-                fetch(`http://127.0.0.1:4000/search-lessons/collection/lessons/${val}/${query}`).then(res => res.json())
+                fetch(`http://127.0.0.1:${port}/search-lessons/collection/lessons/${val}/${query}`).then(res => res.json())
                 .then(result => {
-                    const location = `http://localhost:4000`
+                    const location = `http://localhost:${port}`
                     webstore.lessons = result.map((x)=>{
                         x["image"] = `${location}/${x["image"]}`
                         return x
@@ -335,5 +335,7 @@ const webstore = new Vue({
         }
     }
 })
+
+
 </script>
 </html>
