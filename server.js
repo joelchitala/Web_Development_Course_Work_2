@@ -99,7 +99,6 @@ app.get("/collection/:collectionName/:id",(req,res,next)=>{
 })
 
 app.put("/collection/:collectionName/:id",(req,res,next)=>{
-    console.log(req.params.id);
     req.collection.updateOne(
     {_id: new ObjectId(req.params.id)},
     {$set:req.body},
@@ -115,7 +114,16 @@ app.post('/collection/:collectionName', bodyParser.json(), (req, res) => {
         if (e) return next(e)
         res.send(results.ops)
     })
-  });
+});
+
+app.delete('/collection/:collectionName', bodyParser.json(), (req, res) => {
+    req.collection.deleteOne(
+        {_id: new ObjectId(req.params.id)},
+        (e,results)=>{
+            if (e) return next(e)
+            res.send(results.result.n == 1 ? {msg: true} : {msg:false})
+        })
+});
 
 app.listen(port, () => {
   console.log(`Server is running on port http://127.0.0.1:${port}`);
