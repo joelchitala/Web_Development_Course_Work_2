@@ -1,0 +1,91 @@
+[{
+  "_id": {
+    "$oid": "6475e62e6d1829dd77a81a2c"
+  },
+  "subject": "Art and Craft",
+  "location": "London",
+  "price": 22,
+  "image": "art_and_craft.jpg",
+  "spaces": 5
+},{
+  "_id": {
+    "$oid": "6475e62e6d1829dd77a81a2d"
+  },
+  "subject": "Sport",
+  "location": "Oxford",
+  "price": 19,
+  "spaces": 5,
+  "image": "sport.jpg"
+},{
+  "_id": {
+    "$oid": "6475e62e6d1829dd77a81a2e"
+  },
+  "subject": "Music",
+  "location": "London",
+  "price": 20,
+  "spaces": 5,
+  "image": "music.jpg"
+},{
+  "_id": {
+    "$oid": "6475e62e6d1829dd77a81a2f"
+  },
+  "subject": "Theater",
+  "location": "York",
+  "price": 17,
+  "spaces": 5,
+  "image": "theater.jpg"
+},{
+  "_id": {
+    "$oid": "6475e62e6d1829dd77a81a30"
+  },
+  "subject": "Coding And Programming",
+  "location": "Bristol",
+  "price": 7,
+  "spaces": 2,
+  "image": "coding.jpg"
+},{
+  "_id": {
+    "$oid": "6475e62e6d1829dd77a81a31"
+  },
+  "subject": "Cooking And Baking",
+  "location": "London",
+  "price": 8,
+  "spaces": 5,
+  "image": "cooking.jpg"
+},{
+  "_id": {
+    "$oid": "6475e62e6d1829dd77a81a32"
+  },
+  "subject": "Religous Activities",
+  "location": "Manchester",
+  "price": 12,
+  "spaces": 5,
+  "image": "religious.jpg"
+},{
+  "_id": {
+    "$oid": "6475e62e6d1829dd77a81a33"
+  },
+  "subject": "Community Services",
+  "location": "Liverpool",
+  "price": 9,
+  "spaces": 5,
+  "image": "community.jpg"
+},{
+  "_id": {
+    "$oid": "6475e62e6d1829dd77a81a34"
+  },
+  "subject": "Theater",
+  "location": "London",
+  "price": 13,
+  "spaces": 5,
+  "image": "theater.jpg"
+},{
+  "_id": {
+    "$oid": "6475e62e6d1829dd77a81a35"
+  },
+  "subject": "Music",
+  "location": "Chelsey",
+  "price": 16,
+  "spaces": 5,
+  "image": "music.jpg"
+}]
